@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Layout} from "antd";
 
-export default function Game() {
+export default function TicTacToeGame() {
     const [xIsNext, setXIsNext] = useState(true);
     const [history, setHistory] = useState([Array(9).fill(null)]);
     const [status, setStatus] = useState(0)
@@ -37,7 +37,7 @@ export default function Game() {
     </div>
 }
 
-function Board({squares, onPlay}) {
+function Board({squares, onPlay}: any) {
     return <Layout>
         <div className="board-row">
             <Square value={squares[0]} onSquareClick={() => onPlay(0)} />
@@ -57,11 +57,11 @@ function Board({squares, onPlay}) {
     </Layout>
 }
 
-function Square({value, onSquareClick}) {
+function Square({value, onSquareClick}: any) {
     return <button className="square" onClick={onSquareClick}>{value}</button>;
 }
 
-function calculateWinner(squares) {
+function calculateWinner(squares: any) {
     const lines = [
         [0, 1, 2],
         [3, 4, 5],

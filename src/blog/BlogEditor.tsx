@@ -2,8 +2,9 @@ import {Button, Form, Input, message} from "antd";
 import axios from "axios";
 import QuillEditor from "./QuillEditor";
 import {useState} from "react";
+import CONFIG from "../const/appConfig";
 
-export default function Blog() {
+export default function BlogEditor() {
     const [form] = Form.useForm();
     const [quillValue, setQuillValue] = useState('')
     return   <Form
@@ -34,7 +35,7 @@ export default function Blog() {
 
 async function saveBlog(form: BlogForm, quillValue:string) {
     const response = await axios.post<CommonResponse<any>>(
-        "http://localhost:8080/blog/edit/newBlog",
+        `${CONFIG.blogApi}/blog/edit/newBlog`,
         {
             "title": form.title,
             "blogText": quillValue

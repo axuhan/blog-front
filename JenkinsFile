@@ -1,0 +1,26 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:24.10.0'
+            args '-p 3000:3000'
+        }
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                // 从 GitHub 拉取代码
+                git branch: 'master',
+                        credentialsId: 'GithubTokenForJenkins', // 替换为你在 Jenkins 中配置的凭据 ID
+                        url: 'https://github.com/axuhan/blog-front.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
+        }
+    }
+}

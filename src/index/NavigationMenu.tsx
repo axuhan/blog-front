@@ -1,5 +1,4 @@
-import {Layout, Menu, MenuProps, theme} from "antd";
-import {useState} from "react";
+import {Menu, type MenuProps} from "antd";
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -16,22 +15,15 @@ export default function NavigationMenu({currentKey=''}) {
         {
             key: 'new-blog',
             label: (
-                <a href="/blog/main" target="_blank" rel="noopener noreferrer">
+                <a href="/blog/newBlog" target="_blank" rel="noopener noreferrer">
                     写博客
                 </a>
             )
         }
     ]
-    const [current, setCurrent] = useState(currentKey);
-
-    const onClick: MenuProps['onClick'] = (e) => {
-        console.log('click ', e);
-        setCurrent(e.key);
-    };
 
     return <Menu
-        onClick={onClick}
-        selectedKeys={[current]}
+        selectedKeys={[currentKey]}
         style={{ height: '100%', borderInlineEnd: 0}}
         mode="inline"
         items={items}
