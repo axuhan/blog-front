@@ -1,17 +1,21 @@
 import {Button, Form, Input, message} from "antd";
-import axios from "axios";
-import QuillEditor from "./QuillEditor";
+import QuillEditor from "./QuillEditor.tsx";
 import {useState} from "react";
-import CONFIG from "../const/appConfig";
+import {blogApiClient, type CommonResponse} from "../../const/apiCommon.tsx";
+import './QuillEditorStyle.css';
 
 export default function BlogEditor() {
     const [form] = Form.useForm();
     const [quillValue, setQuillValue] = useState('')
     return   <Form
         form={form}
-        name="login"
+        name="editor"
         onFinish={form => saveBlog(form, quillValue)}
         onFinishFailed={err => console.error(err)}
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 16 }}
+        initialValues={{ remember: true }}
+        style={{ minWidth: '100vw' }}
         autoComplete="off"
         layout="vertical"
     >
@@ -25,35 +29,35 @@ export default function BlogEditor() {
             name="content"
             getValueFromEvent={(value) => value}
         >
-            <QuillEditor value={quillValue} onChange={setQuillValue}/>
+            <QuillEditor value={quillValue} onChange={setQuillValue} />
         </Form.Item>
         <Form.Item>
-            <Button type="primary" htmlType="submit" block>保存</Button>
+            <Button type="primary" htmlType="submit" block style={{width:200}}>
+                保存
+            </Button>
         </Form.Item>
     </Form>
 }
 
 async function saveBlog(form: BlogForm, quillValue:string) {
-    const response = await axios.post<CommonResponse<any>>(
-        `${CONFIG.blogApi}/blog/edit/newBlog`,
+    await blogApiClient.post<CommonResponse<any>>(
+        `/blog/edit/newBlog`,
         {
             "title": form.title,
             "blogText": quillValue
         }
-    )
-    if(!response.data.success) {
-        throw Error(response.data.message)
-    }
-    message.success('保存成功')
+    ).then(response => {
+        if(!response.data.success) {
+            message.error(response.data.message)
+        }
+        message.success('保存成功')
+    }).catch(err => {
+        message.error('保存失败')
+        console.error(err)
+    });
 }
 
 interface BlogForm {
     title: string,
     content: string
-}
-
-interface CommonResponse<T> {
-    success: boolean,
-    message: string,
-    data: T
 }

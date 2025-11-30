@@ -6,7 +6,7 @@ interface Props {
     onChange: (value: string) => void
 }
 
-export default function QuillEditor({value, onChange}: Props) {
+export default function QuillEditor({value, onChange, ...params}: Props) {
     const modules = {
         toolbar: [
             [{ 'header': [1, 2, 3, false] }],
@@ -30,6 +30,8 @@ export default function QuillEditor({value, onChange}: Props) {
             formats={formats}
             value={value}
             onChange={onChange}
-            theme="snow"/>
+            theme="snow"
+            {...params}
+        />
     );
 }

@@ -5,18 +5,18 @@ type MenuItem = Required<MenuProps>['items'][number];
 export default function NavigationMenu({currentKey=''}) {
     const items: MenuItem[] = [
         {
-            key: 'tic-tac-toe',
+            key: 'my-blog',
             label: (
-                <a href="/index" target="_blank" rel="noopener noreferrer">
-                    井字棋
+                <a href="/blog/my-blog" target="_self" rel="noopener noreferrer">
+                    博客
                 </a>
             )
         },
         {
-            key: 'new-blog',
+            key: 'tic-tac-toe',
             label: (
-                <a href="/blog/newBlog" target="_blank" rel="noopener noreferrer">
-                    写博客
+                <a href="/index" target="_self" rel="noopener noreferrer">
+                    井字棋
                 </a>
             )
         }
@@ -25,6 +25,7 @@ export default function NavigationMenu({currentKey=''}) {
     return <Menu
         selectedKeys={[currentKey]}
         style={{ height: '100%', borderInlineEnd: 0}}
+        theme="dark"
         mode="inline"
         items={items}
     />;

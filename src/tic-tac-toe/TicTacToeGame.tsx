@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Layout} from "antd";
+import './BoardStyle.css';
 
 export default function TicTacToeGame() {
     const [xIsNext, setXIsNext] = useState(true);
@@ -38,7 +38,7 @@ export default function TicTacToeGame() {
 }
 
 function Board({squares, onPlay}: any) {
-    return <Layout>
+    return <div>
         <div className="board-row">
             <Square value={squares[0]} onSquareClick={() => onPlay(0)} />
             <Square value={squares[1]} onSquareClick={() => onPlay(1)} />
@@ -54,7 +54,7 @@ function Board({squares, onPlay}: any) {
             <Square value={squares[7]} onSquareClick={() => onPlay(7)} />
             <Square value={squares[8]} onSquareClick={() => onPlay(8)} />
         </div>
-    </Layout>
+    </div>
 }
 
 function Square({value, onSquareClick}: any) {

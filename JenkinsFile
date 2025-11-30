@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:24.10.0'
-            args '-p 3000:3000'
+            args '-p 3000:3000 -v /root/.npm:/root/.npm --add-host=host.docker.internal:host-gateway'
         }
     }
 
@@ -10,17 +10,58 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                // 从 GitHub 拉取代码
-                git branch: 'master',
-                        credentialsId: 'GithubTokenForJenkins', // 替换为你在 Jenkins 中配置的凭据 ID
-                        url: 'https://github.com/axuhan/blog-front.git'
+                retry(3) {
+                    timeout(time: 60, unit: 'SECONDS') {
+                        git branch: 'master',
+                                credentialsId: 'GithubTokenForJenkins',
+                                url: 'https://github.com/axuhan/blog-front.git'
+                    }
+                }
+                script {
+                    def commit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                    def version = "${commit}_${new Date().format('yyyyMMddHHmmss')}"
+                    env.BUILD_VERSION = version
+                }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm install'
+                sh 'npm install -g'
+                sh 'npm run build'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                sh 'tar -cf dist.tar dist'
+                script {
+                    def serverBatches = getServerBatches()
+                    for(batch in serverBatches) {
+                        // 实际部署逻辑
+                        deployBatchServers_v2(batch, env.BUILD_VERSION)
+                    }
+                }
+            }
+        }
+    }
+}
+
+def static getServerBatches() {
+    return [
+            ["host.docker.internal"]
+    ]
+}
+
+def deployBatchServers_v2(servers, version) {
+    for(server in servers) {
+        sh """
+            ssh -i /var/jenkins_home/ssh_key/id_rsa -o StrictHostKeyChecking=no root@${server} 'mkdir -p /var/www/blog-front/${version}'
+            scp -i /var/jenkins_home/ssh_key/id_rsa dist.tar root@${server}:/var/www/blog-front
+            ssh -i /var/jenkins_home/ssh_key/id_rsa root@${server} 'tar -xf /var/www/blog-front/dist.tar -C /var/www/blog-front/${version} \\
+                && ln -sfn /var/www/blog-front/${version} /var/www/blog-front/web \\
+                && rm /var/www/blog-front/dist.tar
+            '
+        """
     }
 }
